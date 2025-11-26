@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Logs
+uvicorn.log
+agent_interactions.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+pip-selfcheck.json
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp

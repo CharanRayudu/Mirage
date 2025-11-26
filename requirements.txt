@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+requests
+python-dotenv
+websockets
+pytest
+httpx
+pylint
+black
+mypy
