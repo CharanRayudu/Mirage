@@ -1,45 +1,29 @@
 version: '3.8'
 
 services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mirage-backend
+    ports:
+      - "${MCP_SERVER_PORT:-8000}:8000"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mirage-frontend
     ports:
       - "3000:3000"
-    depends_on:
-      - mirage
-
-  mirage:
-    build:
-      context: .
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
     volumes:
-      - ./agent_interactions.log:/app/agent_interactions.log
-    depends_on:
-      nim:
-        condition: service_healthy
-
-  nim:
-    image: nvcr.io/nim/nvidia/nvidia-nemotron-nano-9b-v2:latest
-    runtime: nvidia
-    shm_size: 16G
+      - ./frontend:/app
+      - /app/node_modules
     environment:
-      - NGC_API_KEY=${NVIDIA_API_KEY}
-    volumes:
-      - ~/.cache/nim:/opt/nim/.cache
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/health/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    command: npm run dev
