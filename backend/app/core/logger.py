@@ -6,7 +6,8 @@ class InMemoryLogger:
         self.logs = deque(maxlen=max_len)
 
     def log(self, message: str, level: str = "INFO"):
-        timestamp = datetime.now().strftime("%H:%M:%S")
+        # Use UTC time with ISO 8601 format for accuracy
+        timestamp = datetime.utcnow().isoformat() + "Z"
         entry = f"[{timestamp}] [{level}] {message}"
         self.logs.appendleft(entry)  # Newest first
         print(entry) # Also print to stdout for Docker logs
