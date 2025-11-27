@@ -5,11 +5,23 @@ export default function Logs() {
     const [logs, setLogs] = useState<string[]>([]);
 
     useEffect(() => {
-        // Mock logs for now
-        const interval = setInterval(() => {
-            const newLog = `[${new Date().toLocaleTimeString()}] ATTACK DETECTED: Source IP 192.168.1.${Math.floor(Math.random() * 255)}`;
-            setLogs((prev) => [newLog, ...prev].slice(0, 50));
-        }, 2000);
+        const fetchLogs = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/logs`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setLogs(data.logs || []);
+                }
+            } catch (error) {
+                console.error("Failed to fetch logs:", error);
+            }
+        };
+
+        // Fetch immediately
+        fetchLogs();
+
+        // Poll every 2 seconds
+        const interval = setInterval(fetchLogs, 2000);
 
         return () => clearInterval(interval);
     }, []);
