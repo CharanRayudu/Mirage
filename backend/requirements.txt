@@ -1,5 +1,2 @@
-fastapi
-uvicorn[standard]
-pydantic-settings
-requests
-openai
+pydantic
+python-dotenv

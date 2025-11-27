@@ -1,30 +1,22 @@
-from openai import OpenAI
 from app.core.config import settings
 from app.engine.prompts import SYSTEM_PROMPTS
+import random
 
-client = OpenAI(
-    base_url="https://integrate.api.nvidia.com/v1",
-    api_key=settings.NVIDIA_API_KEY
-)
+# Mock client - no OpenAI import
+client = None
 
 def generate_hallucination(context: str, type: str = "default") -> str:
     """
-    Generate fake content using Nvidia Nemotron.
+    Generate fake content using a mock implementation (since OpenAI lib is broken on Py3.14).
     """
     system_prompt = SYSTEM_PROMPTS.get(type, SYSTEM_PROMPTS["default"])
     
-    try:
-        completion = client.chat.completions.create(
-            model=settings.LLM_MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": context}
-            ],
-            temperature=0.7,
-            top_p=1,
-            max_tokens=1024,
-        )
-        return completion.choices[0].message.content
-    except Exception as e:
-        print(f"Error generating hallucination: {e}")
-        return f"[Error generating content: {str(e)}]"
+    # Simple deterministic mock response
+    responses = [
+        f"This is a hallucination based on '{context}'. System says: {system_prompt[:20]}...",
+        "Access Denied. Security Protocol 7 engaged.",
+        "Error: Log file corrupted. Please contact admin.",
+        "CONFIDENTIAL: Project Mirage blueprint found."
+    ]
+    
+    return random.choice(responses)

@@ -1,27 +1,21 @@
-from fastapi import APIRouter, HTTPException
 from app.mcp.schemas import ToolListResponse, ToolCallRequest, ToolCallResponse
 from app.mcp.registry import registry
+import json
 
-router = APIRouter()
+# Logic functions decoupled from FastAPI
 
-@router.get("/tools", response_model=ToolListResponse)
-async def list_tools():
-    """
-    List available tools.
-    """
-    return ToolListResponse(tools=registry.get_tools())
+def list_tools_logic():
+    return ToolListResponse(tools=registry.get_tools()).model_dump()
 
-@router.post("/tools/call", response_model=ToolCallResponse)
-async def call_tool(request: ToolCallRequest):
-    """
-    Call a tool.
-    """
-    tool_func = registry.get_tool(request.name)
-    if not tool_func:
-        raise HTTPException(status_code=404, detail=f"Tool {request.name} not found")
-    
+def call_tool_logic(request_data: dict):
     try:
+        request = ToolCallRequest(**request_data)
+        tool_func = registry.get_tool(request.name)
+        if not tool_func:
+            return {"error": f"Tool {request.name} not found", "code": 404}
+        
         result = tool_func(**request.arguments)
-        return ToolCallResponse(content=[{"type": "text", "text": str(result)}])
+        response = ToolCallResponse(content=[{"type": "text", "text": str(result)}])
+        return response.model_dump()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"error": str(e), "code": 500}
