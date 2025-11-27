@@ -2,43 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --foreground-rgb: 0, 255, 157;
-  --background-start-rgb: 10, 10, 10;
+  --background-start-rgb: 5, 5, 5;
   --background-end-rgb: 0, 0, 0;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-  font-family: 'Courier New', Courier, monospace;
-  overflow: hidden; 
+  background: #050505;
+  font-family: var(--font-inter), sans-serif;
+  overflow: hidden;
 }
 
-/* Scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #111; 
-}
-::-webkit-scrollbar-thumb {
-  background: #333; 
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #00ff9d; 
+  width: 6px;
+  height: 6px;
 }
 
-.cyber-border {
-  border: 1px solid #333;
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff9d;
+}
+
+/* Utilities */
+.glass-panel {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.neon-border {
+  border: 1px solid rgba(0, 255, 157, 0.3);
   box-shadow: 0 0 10px rgba(0, 255, 157, 0.1);
 }
 
-.cyber-glow {
-  text-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+.glow-text {
+  text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+}
+
+.scanline-overlay {
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 0, 0, 0.2) 50%,
+      rgba(0, 0, 0, 0.2));
+  background-size: 100% 4px;
+  pointer-events: none;
 }

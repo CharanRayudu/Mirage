@@ -1,24 +1,53 @@
 import Visualizer from '@/components/visualizer/Visualizer'
 import Logs from '@/components/logs/Logs'
+import Card from '@/components/ui/Card'
+import { Activity, Terminal } from 'lucide-react'
 
 export default function Home() {
   return (
-    <main className="flex h-full w-full flex-col p-4 gap-4">
-      <header className="flex justify-between items-center border-b border-cyber-gray pb-2">
-        <h1 className="text-2xl font-bold cyber-glow">MIRAGE // SYSTEM MONITOR</h1>
-        <div className="text-xs text-cyber-pink animate-pulse">STATUS: ACTIVE</div>
-      </header>
-
-      <div className="flex flex-1 gap-4 min-h-0">
-        <div className="flex-[2] cyber-border bg-cyber-dark/50 rounded p-2 relative">
-          <div className="absolute top-2 left-2 text-xs bg-cyber-black px-2 border border-cyber-gray">VISUALIZER</div>
+    <div className="grid grid-cols-12 grid-rows-12 gap-6 h-full w-full">
+      {/* Main Visualizer Area */}
+      <div className="col-span-8 row-span-8">
+        <Card title="NETWORK VISUALIZER" className="h-full" action={<Activity size={16} className="text-cyber-neon" />}>
           <Visualizer />
-        </div>
-        <div className="flex-1 cyber-border bg-cyber-dark/50 rounded p-2 relative flex flex-col">
-          <div className="absolute top-2 left-2 text-xs bg-cyber-black px-2 border border-cyber-gray">LIVE LOGS</div>
-          <Logs />
-        </div>
+        </Card>
       </div>
-    </main>
+
+      {/* Stats / Quick Info */}
+      <div className="col-span-4 row-span-4 flex flex-col gap-6">
+        <Card title="ACTIVE THREATS" className="flex-1 bg-cyber-alert/5 border-cyber-alert/20">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="text-5xl font-mono font-bold text-cyber-alert glow-text mb-2">0</div>
+              <div className="text-xs text-gray-400 tracking-widest">DETECTED INTRUSIONS</div>
+            </div>
+          </div>
+        </Card>
+        <Card title="SYSTEM LOAD" className="flex-1">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="text-5xl font-mono font-bold text-cyber-cyan glow-text mb-2">12%</div>
+              <div className="text-xs text-gray-400 tracking-widest">CPU USAGE</div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Logs Console */}
+      <div className="col-span-4 row-span-8">
+        <Card title="LIVE TERMINAL" className="h-full" action={<Terminal size={16} className="text-cyber-neon" />}>
+          <Logs />
+        </Card>
+      </div>
+
+      {/* Bottom Panel (e.g. Timeline or more stats) */}
+      <div className="col-span-8 row-span-4">
+        <Card title="EVENT TIMELINE" className="h-full">
+          <div className="flex items-center justify-center h-full text-gray-500 font-mono text-sm">
+            [NO RECENT EVENTS RECORDED]
+          </div>
+        </Card>
+      </div>
+    </div>
   )
 }
