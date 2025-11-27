@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import TestingPanel from "@/components/TestingPanel";
-import AgentGraph from "@/components/AgentGraph"; // Import the new graph component
+import DashboardLayout from "@/components/DashboardLayout";
+import LogStream from "@/components/LogStream";
 
 interface LogEntry {
   timestamp: string;
@@ -25,9 +26,9 @@ export default function Home() {
   // Initial fetch of historical logs
   const fetchLogs = async () => {
     try {
-      const res = await fetch("/api/logs"); 
+      const res = await fetch("/api/logs");
       const data = await res.json();
-      setLogs(data); // The graph logic will handle the order
+      setLogs(data);
     } catch (error) {
       console.error("Failed to fetch initial logs:", error);
     }
@@ -43,7 +44,7 @@ export default function Home() {
     ws.onmessage = (event) => {
       try {
         const newLog = JSON.parse(event.data);
-        setLogs(prevLogs => [...prevLogs, newLog]); // Append new log
+        setLogs(prevLogs => [...prevLogs, newLog]);
       } catch (error) {
         console.error("Failed to parse incoming log:", error);
       }
@@ -55,16 +56,15 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="bg-gray-900 text-white min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">MIRAGE - Agent Zoo</h1>
-        
-        <TestingPanel />
-
-        {/* Replace the table with the new AgentGraph component */}
-        <h2 className="text-2xl font-bold mt-12 mb-4">Agent Activity Graph</h2>
-        <AgentGraph logs={logs} />
+    <DashboardLayout>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <LogStream logs={logs} />
+        </div>
+        <div>
+          <TestingPanel />
+        </div>
       </div>
-    </main>
+    </DashboardLayout>
   );
 }
