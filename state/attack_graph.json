@@ -1,0 +1,27 @@
+{
+  "run_id": "RUN_20260310_201000",
+  "scope_id": "local-lab-default",
+  "target": {
+    "type": "url",
+    "value": "http://localhost:3000"
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "kind": "recon",
+      "title": "Probe HTTP surface",
+      "description": "Enumerate reachable base URLs and capture basic headers/statuses.",
+      "tool": "httpx",
+      "command_template": ["httpx", "-silent", "-probe", "-list", "artifacts/runs/<run_id>/inputs/hosts.txt"],
+      "depends_on": [],
+      "status": "PENDING",
+      "artifacts": [],
+      "evidence": []
+    }
+  ],
+  "edges": [],
+  "policies": {
+    "no_exploitation": true,
+    "require_hitl_for_active_fuzzing": true
+  }
+}
