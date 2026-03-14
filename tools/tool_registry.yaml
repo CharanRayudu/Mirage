@@ -1,0 +1,177 @@
+# Tool Registry
+# Defines available security tools, their output formats, runners, safety levels, and HITL gates.
+#
+# Safety levels:
+#   passive          — no active probing (DNS lookups, header inspection, OSINT)
+#   recon            — enumeration/discovery (asset finding, port scanning)
+#   active_scanner   — template-based scanning (nuclei, etc.)
+#   active_fuzzer    — parameter fuzzing, brute-force (requires HITL)
+#   network_scanner  — network-level scanning (nmap)
+#   proxy            — traffic interception
+#   interactive_scanner — interactive tools (Burp Suite)
+#   browser_automation  — headless browser automation
+#
+# HITL Policy:
+#   requires_hitl: true means the tool MUST NOT run without human approval.
+#   denied_flags: flags that are NEVER allowed in autonomous mode.
+
+tools:
+  # ─── Passive / Recon ──────────────────────────────────────────────────
+  httpx:
+    description: "HTTP probe and response capture"
+    output: "jsonl"
+    runner: "host"
+    safety_level: "passive"
+    max_concurrency: 30
+    rate_limit: 600  # requests per minute
+    requires_hitl: false
+    install: "go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest"
+    docs: "https://docs.projectdiscovery.io/tools/httpx"
+
+  subfinder:
+    description: "Passive subdomain enumeration"
+    output: "jsonl"
+    runner: "host"
+    safety_level: "passive"
+    requires_hitl: false
+    install: "go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
+    docs: "https://docs.projectdiscovery.io/tools/subfinder"
+
+  katana:
+    description: "Web crawling and spidering framework"
+    output: "jsonl"
+    runner: "host"
+    safety_level: "passive"
+    max_concurrency: 5
+    max_depth: 3
+    rate_limit: 120
+    requires_hitl: false
+    install: "go install -v github.com/projectdiscovery/katana/cmd/katana@latest"
+    docs: "https://docs.projectdiscovery.io/tools/katana"
+
+  gau:
+    description: "Fetch known URLs from Wayback Machine, Common Crawl, OTX, URLScan"
+    output: "text"
+    runner: "host"
+    safety_level: "passive"
+    requires_hitl: false
+    install: "go install github.com/lc/gau/v2/cmd/gau@latest"
+    docs: "https://github.com/lc/gau"
+
+  waybackurls:
+    description: "Fetch archived URLs from the Wayback Machine"
+    output: "text"
+    runner: "host"
+    safety_level: "passive"
+    requires_hitl: false
+    install: "go install github.com/tomnomnom/waybackurls@latest"
+    docs: "https://github.com/tomnomnom/waybackurls"
+
+  dnsx:
+    description: "DNS resolution and validation toolkit"
+    output: "jsonl"
+    runner: "host"
+    safety_level: "passive"
+    requires_hitl: false
+    install: "go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest"
+    docs: "https://docs.projectdiscovery.io/tools/dnsx"
+
+  amass:
+    description: "Attack surface discovery and enumeration"
+    output: "json"
+    runner: "host"
+    safety_level: "recon"
+    requires_hitl: false
+    install: "go install -v github.com/owasp-amass/amass/v4/...@master"
+    docs: "https://github.com/owasp-amass/amass"
+
+  # ─── Active Scanning (Gated) ─────────────────────────────────────────
+  nuclei:
+    description: "Template-based vulnerability scanner"
+    output: "jsonl"
+    runner: "host"
+    safety_level: "active_scanner"
+    reporting_db: true
+    max_concurrency: 25
+    rate_limit: 600
+    requires_hitl: false  # Safe templates only; code templates require HITL
+    denied_flags:
+      - "-code"           # Code templates are high risk
+      - "-headless"       # Headless browser templates need review
+    install: "go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"
+    docs: "https://docs.projectdiscovery.io/tools/nuclei"
+
+  ffuf:
+    description: "Fast web fuzzer for content discovery"
+    output: "json"
+    runner: "host"
+    safety_level: "active_fuzzer"
+    max_concurrency: 40
+    rate_limit: 600
+    requires_hitl: true   # Fuzzing always requires human approval
+    install: "go install github.com/ffuf/ffuf/v2@latest"
+    docs: "https://github.com/ffuf/ffuf/wiki"
+
+  nmap:
+    description: "Network port scanner and service detector"
+    output: "xml+normal+grepable"
+    runner: "host"
+    safety_level: "network_scanner"
+    requires_hitl: false  # Service detection is safe; aggressive modes need review
+    denied_flags:
+      - "--script=exploit"
+      - "-sU"             # UDP scanning is slow and noisy
+    install: "system package manager"
+    docs: "https://nmap.org/book/man.html"
+
+  # ─── High Risk (Always HITL) ─────────────────────────────────────────
+  sqlmap:
+    description: "Automated SQL injection detection and exploitation"
+    output: "text"
+    runner: "host"
+    safety_level: "active_fuzzer"
+    requires_hitl: true   # ALWAYS requires human approval
+    denied_flags:
+      - "--os-shell"
+      - "--os-pwn"
+      - "--file-write"
+      - "--file-read"
+    install: "pip install sqlmap"
+    docs: "https://sqlmap.org"
+
+  zap:
+    description: "OWASP ZAP DAST scanner"
+    output: "json"
+    runner: "docker"
+    safety_level: "active_scanner"
+    requires_hitl: true   # Active scanning is an attack — ZAP docs explicitly state this
+    install: "docker pull ghcr.io/zaproxy/zaproxy:stable"
+    docs: "https://www.zaproxy.org/docs/"
+
+  # ─── Proxy & Browser ────────────────────────────────────────────────
+  mitmproxy:
+    description: "HTTP/HTTPS proxy for traffic capture"
+    output: "har"
+    runner: "host"
+    safety_level: "proxy"
+    requires_hitl: false
+    install: "pip install mitmproxy"
+    docs: "https://docs.mitmproxy.org"
+
+  burp:
+    description: "Interactive web security scanner (REST API)"
+    output: "html"
+    runner: "host"
+    safety_level: "interactive_scanner"
+    requires_hitl: true
+    notes: "Bind to loopback only; require API key"
+    docs: "https://portswigger.net/burp/documentation"
+
+  playwright:
+    description: "Headless browser automation for UI testing and HAR capture"
+    output: "trace_zip+har"
+    runner: "host"
+    safety_level: "browser_automation"
+    requires_hitl: false
+    install: "pip install playwright && playwright install"
+    docs: "https://playwright.dev/python/docs/intro"

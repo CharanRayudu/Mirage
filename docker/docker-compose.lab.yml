@@ -1,0 +1,22 @@
+# Local vulnerable lab targets — bind to loopback only.
+# Usage: docker compose -f docker/docker-compose.lab.yml up -d
+
+services:
+  juice-shop:
+    image: bkimminich/juice-shop
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  dvga:
+    image: dolevf/dvga:latest
+    environment:
+      - WEB_HOST=0.0.0.0
+    ports:
+      - "127.0.0.1:5013:5013"
+    restart: unless-stopped

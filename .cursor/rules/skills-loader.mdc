@@ -1,0 +1,26 @@
+---
+description: Automatically load relevant skills based on the current testing context
+globs: skills/**,state/attack_graph.json
+alwaysApply: false
+---
+
+# Skills Loader
+
+## Available Skills
+
+| Skill | File | When to Use |
+|---|---|---|
+| IDOR | `skills/idor.md` | Testing object-level access controls |
+| GraphQL | `skills/graphql.md` | GraphQL endpoint discovery or testing |
+| JWT | `skills/jwt.md` | JWT/token validation analysis |
+| XSS | `skills/xss.md` | Reflection/stored input testing |
+| SSRF | `skills/ssrf.md` | URL-fetch feature analysis |
+| Auth Testing | `skills/auth_testing.md` | Session/auth boundary testing |
+
+## Loading Rules
+
+1. When planning a new task node in `attack_graph.json`, check if a matching skill exists.
+2. If a skill exists, read it first to follow the methodology.
+3. If no skill exists for a test category, create one from `skills/SKILL_TEMPLATE.md` before planning.
+4. Skills define: detection heuristics, safe test procedures, evidence checklists, and remediation.
+5. Never deviate from the skill's safety boundaries.

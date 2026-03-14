@@ -1,0 +1,31 @@
+{
+  "run_id": "template",
+  "target": {
+    "type": "url",
+    "value": "https://stripe.com"
+  },
+  "discoveries": {
+    "endpoints": [],
+    "parameters": [],
+    "auth_contexts": [],
+    "vulnerabilities": []
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "status": "PENDING",
+      "title": "Probe HTTP surface",
+      "description": "Initial active probing of discovered endpoints.",
+      "tool": "httpx",
+      "command_template": [
+        "httpx",
+        "-silent",
+        "-probe",
+        "-list",
+        "artifacts/runs/<run_id>/inputs/hosts.txt"
+      ],
+      "depends_on": [],
+      "artifacts": []
+    }
+  ]
+}

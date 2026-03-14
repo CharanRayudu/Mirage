@@ -1,0 +1,24 @@
+# Sandboxed tool execution environment.
+# Usage: docker compose -f docker/docker-compose.agent.yml up -d
+
+services:
+  agent-sandbox:
+    image: python:3.12-slim
+    working_dir: /workspace
+    volumes:
+      - ../:/workspace:rw
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["tail", "-f", "/dev/null"]  # Keep container running
+    network_mode: host  # Access to localhost lab targets
+    restart: unless-stopped
+
+  # Optional: ProjectDiscovery tools container
+  pd-tools:
+    image: golang:1.22-bookworm
+    working_dir: /workspace
+    volumes:
+      - ../:/workspace:rw
+    command: ["tail", "-f", "/dev/null"]
+    network_mode: host
+    restart: unless-stopped

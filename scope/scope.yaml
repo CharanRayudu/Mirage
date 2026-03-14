@@ -1,0 +1,31 @@
+scope_id: "local-lab-default"
+allowed_targets:
+  # Safe defaults: local-only. Expand only with written authorization.
+  hosts:
+    - "localhost"
+    - "127.0.0.1"
+    - "::1"
+  url_prefixes:
+    - "http://localhost:"
+    - "http://127.0.0.1:"
+    - "https://localhost:"
+    - "https://127.0.0.1:"
+allowed_actions:
+  passive_recon: true
+  authenticated_testing: true
+  active_fuzzing: false        # require HITL flip
+  exploitation: false          # keep false; PoCs must be non-destructive
+rate_limits:
+  http_rps: 2
+  tool_timeouts_seconds:
+    default: 300
+    browser: 900
+data_handling:
+  store_raw_http: true
+  redact_secrets_in_reports: true
+human_in_the_loop:
+  required_for:
+    - "active_fuzzing"
+    - "any command that modifies server state"
+notes:
+  - "Expand scope only with explicit written authorization."

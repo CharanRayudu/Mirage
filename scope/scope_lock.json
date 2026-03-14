@@ -1,0 +1,40 @@
+{
+  "scope_id": "local-lab-default",
+  "locked_at": "2026-03-10T20:10:00-04:00",
+  "allowed_targets": {
+    "hosts": [
+      "localhost",
+      "127.0.0.1",
+      "::1"
+    ],
+    "url_prefixes": [
+      "http://localhost:",
+      "http://127.0.0.1:",
+      "https://localhost:",
+      "https://127.0.0.1:"
+    ]
+  },
+  "allowed_actions": {
+    "passive_recon": true,
+    "authenticated_testing": true,
+    "active_fuzzing": false,
+    "exploitation": false
+  },
+  "rate_limits": {
+    "http_rps": 2,
+    "tool_timeouts_seconds": {
+      "default": 300,
+      "browser": 900
+    }
+  },
+  "data_handling": {
+    "store_raw_http": true,
+    "redact_secrets_in_reports": true
+  },
+  "human_in_the_loop": {
+    "required_for": [
+      "active_fuzzing",
+      "any command that modifies server state"
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+---
+description: Hard safety guardrails — enforced on every agent action
+globs: '**'
+alwaysApply: true
+---
+
+# Safety Guardrails
+
+## Scope Gate (MANDATORY)
+
+Before ANY tool execution or network request:
+1. Load `scope/scope_lock.json`
+2. Verify target is in `allowed_targets.url_prefixes`
+3. Verify action type is permitted in `allowed_actions`
+4. If HITL is required for the action, STOP and ask the human operator
+
+## Command Deny-List
+
+NEVER execute commands containing these patterns:
+- `reverse shell`, `nc -e`, `bash -i`
+- `powershell -enc`
+- `rm -rf`
+- `curl | bash`, `wget | sh`
+- `mkfifo`, `/dev/tcp`
+- Fork bombs or resource exhaustion patterns
+- `eval(`, `exec(`, `os.system(`
+
+## Data Handling
+
+- RAW HTTP data: store locally only, never transmit
+- Secrets in reports: MUST be redacted
+- PII found during testing: do NOT store, document existence only
+- Credentials: reference from secure config, never embed in artifacts
+
+## Rate Limiting
+
+- Default: 2 requests/second
+- Tool timeout: 300 seconds
+- Browser automation timeout: 900 seconds
+- Respect target-specific limits in `scope.yaml`
+
+## Escalation Protocol
+
+If any of the following occur, STOP immediately:
+1. Tool tries to access a target not in scope
+2. Command matches deny-list pattern
+3. Unexpected data exposure (PII, credentials, sensitive business data)
+4. Target becomes unresponsive (possible service disruption)
+5. Scope ambiguity — unsure if an action is permitted
+
+In all cases: log the event, preserve artifacts, notify the human operator.

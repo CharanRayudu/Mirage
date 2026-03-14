@@ -1,0 +1,7 @@
+allowed_targets:
+  url_prefixes:
+  - https://*.stripe.com
+rate_limits:
+  requests_per_second: 2
+  tool_timeouts_seconds:
+    default: 300

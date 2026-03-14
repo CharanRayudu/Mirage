@@ -1,0 +1,36 @@
+---
+description: BugBounty agent safety + state discipline
+globs: scope/**,state/**,agents/**,skills/**,tools/**
+alwaysApply: true
+---
+
+# Mirage — BugBounty AI System Rules
+
+## Core Discipline
+
+1. **Scope Enforcement**: Always check `scope/scope_lock.json` before any action. If a target is not explicitly listed, STOP.
+2. **State-First**: Plans live in `state/attack_graph.json`. Edit the DAG, don't improvise.
+3. **Evidence-First**: Every claim requires an artifact path. No evidence = hypothesis, not a finding.
+4. **Deterministic Execution**: Use `tools/scripts/bbctl.py` for execution. Capture all outputs in `artifacts/runs/<run_id>/`.
+
+## File Conventions
+
+| File | Purpose | Who Writes |
+|---|---|---|
+| `scope/scope_lock.json` | Allowed targets/actions | Scope Manager (human) |
+| `state/attack_graph.json` | Task DAG | Planner |
+| `state/events.jsonl` | Audit trail | Executor (via bbctl) |
+| `state/findings.db` | Canonical findings | Validator |
+| `state/run_state.json` | Memory notes | Reflector |
+
+## Agent Coordination
+
+- **Planner** modifies the DAG. **Executor** runs it. **Reflector** validates.
+- Specialist agents (Recon, Auth, Validator, Report Writer) are invoked by the Orchestrator as needed.
+- Use `skills/*.md` as methodology guides for each test category.
+
+## Safety Non-Negotiables
+
+- No exploit code. No destructive actions. No credential theft.
+- HITL required for active fuzzing and state-modifying operations.
+- Rate limit: 2 req/s default. Respect tool timeouts.

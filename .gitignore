@@ -54,3 +54,8 @@ yarn-error.log*
 # Next.js
 .next/
 out/
+
+# Mirage — BugBounty AI Agent
+state/findings.db
+state/events.jsonl
+artifacts/runs/
